@@ -1,0 +1,30 @@
+@if (contact) {
+    <div class="card mb-4 shadow-sm"> 
+      <div class="card-header bg-light">
+        <div class="d-flex justify-content-between align-items-center"> 
+          <h5 class="card-title mb-0">{{ contact.name }}</h5> 
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-sm btn-primary mx-1" (click)="onEdit()">Edit</button>
+            <button type="button" class="btn btn-sm btn-danger" (click)="onDelete()">Delete</button>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="row align-items-center">
+          <div class="col-md-3 text-center mb-3 mb-md-0"> 
+
+            <img [src]="contact.imageUrl" 
+                 alt="{{ contact.name }}" 
+                 class="img-fluid rounded  mb-3 mx-1 mb-md-0" 
+                 style="max-height: 200px; object-fit: cover;">
+          </div>
+          <div class="col-md-9"> 
+            <div class="contact-info">
+              <p class="mb-2"><strong>Email:</strong> {{ contact.email }}</p>
+              <p class="mb-0"><strong>Phone:</strong> {{ contact.phone }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
