@@ -17,7 +17,7 @@ To generate a component with the `"cms"` prefix:
 ng new cms --prefix=cms
 ```
 
-For example, to create a `"cms-header"` component:
+For example, to create a `"cms-contacts"` component:
 
 ```bash
 ng generate component contacts
