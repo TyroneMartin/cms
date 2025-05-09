@@ -12,7 +12,9 @@ import { Contact } from './contact.model';
   styleUrl: './contacts.component.css',
 })
 export class ContactsComponent {
-  selectedContact!: Contact;
+  selectedContact!: Contact;  // Use ! to tell the compiler you’ll assign it before it's used
+  // selectedContact: Contact = {} as Contact; // Initialize selectedContact as an empty object
+
 
   onContactSelected(contact: Contact) {
     this.selectedContact = contact;

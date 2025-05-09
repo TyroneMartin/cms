@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Contact } from '../contact.model';
 
@@ -11,20 +11,10 @@ import { Contact } from '../contact.model';
 })
 export class ContactDetailComponent implements OnInit {
   @Input() contact!: Contact;
+  //  constructor() {}      
 
-  constructor() {}
-
-  ngOnInit(): void {
-    if (!this.contact) {
-      this.contact = {
-        id: '1',
-        name: 'Bro. Jackson',
-        email: 'jacksonk@byui.edu',
-        phone: '208-496-3771',
-        imageUrl: 'assets/images/jacksonk.jpg',
-        group: [],
-      };
-    }
+  ngOnInit() {
+    console.log("ContactDetailComponent initialized");
   }
 
   onEdit() {
