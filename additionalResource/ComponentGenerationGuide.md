@@ -2,7 +2,7 @@
 
 This guide demonstrates how to create new Angular components with appropriate prefixes.
 
-> Demo : [Week 04 Working Angular Application Demo](https://youtu.be/fdk6pWgQyIU)
+> Demo : [Week 04 Working Angular Application Demo](https://youtu.be/5FVgmpakyaM)
 
 
 ## Creating Components with the CMS Prefix
@@ -134,5 +134,95 @@ This will render the content of `CmsHeaderComponent` inside your app's root comp
 | `ng test`                                           | Run unit tests                     |
 | `ng build --prod`                                   | Create a production build          |
 |                                                     |                                    |
+
+
+
+Here's a brief and clear `README.md` file you can use for your Angular services and cross-component communication setup:
+
+---
+
+# Angular CMS Services Setup
+
+## Overview
+
+This project uses **Angular services** to share functionality and data across multiple components in the CMS (Content Management System) application. Services provide a centralized way to manage data and logic for different features such as **Documents**, **Messages**, and **Contacts**.
+
+## What is an Angular Service?
+
+An Angular service is a reusable class that contains methods and properties used by multiple components. Unlike components, services do not have HTML or CSS — they focus solely on **business logic and data management**, often acting as the **Model Layer** in an Angular app.
+
+Common responsibilities of services:
+
+* Fetching and storing data
+* Sharing data across components
+* Handling C.R.U.D. (Create, Read, Update, Delete) operations
+
+---
+
+## Current Features
+
+For this assignment, each feature — **Documents**, **Messages**, and **Contacts** — has its own dedicated service with the following basic methods:
+
+* `getAll()`: Returns a list of all objects
+* `getById(id: string)`: Returns a single object based on its ID
+
+Later, we will add:
+
+* `add(object)`: Create a new object
+* `update(id, updatedObject)`: Modify an existing object
+* `delete(id)`: Remove an object
+
+---
+
+## Cross-Component Communication
+
+To allow components to share and update data in real time, each service uses RxJS `Subject` to emit changes. For example:
+
+* `MessageEditComponent` adds a message via the `MessageService`.
+* `MessageService` stores the message and emits the updated list.
+* `MessageListComponent` subscribes to the service and updates automatically.
+
+
+## How to Set Up a Service
+
+1. **Generate the service** using Angular CLI:
+
+   ```bash
+   ng generate service messages
+   ```
+
+   or 
+
+      ```bash
+   ng g s messages
+   ```
+
+2. **Inject the service** into your component:
+
+   ```ts
+   constructor(private messageService: MessageService) {}
+   ```
+
+3. **Use service methods** in the component:
+
+   ```ts
+   this.messageService.getAll();
+   ```
+
+4. **Subscribe to updates** if needed:
+
+   ```ts
+   this.messageService.messagesChanged.subscribe(messages => {
+     this.messages = messages;
+   });
+   ```
+
+---
+
+## Best Practices
+
+* Use services to manage and encapsulate all business logic and data operations.
+* Use `Subject` or `BehaviorSubject` to emit data changes and enable cross-component communication.
+* Keep services stateless where possible, or use them as single sources of truth for shared state.
 
 

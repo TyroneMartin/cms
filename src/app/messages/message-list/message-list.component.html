@@ -1,28 +1,30 @@
 <div class="row">
   <div class="col-md-5">
     <div class="card shadow-sm">
-      <div class="card-header bg-light">  
-        <div class="d-flex align-items-center px-3"> 
+      <div class="card-header bg-light">
+        <div class="d-flex align-items-center px-3">
           <h5 class="mb-0 flex-grow-1">Messages</h5>
         </div>
       </div>
       <div class="card-body p-0">
-        <div class="list-group"> 
-          <div class="list-group-item border-0"> 
+        <div class="list-group">
+          <div class="list-group">
             <cms-message-item
               *ngFor="let messageEl of messages"
               [message]="messageEl"
-              class="list-group-item border-0"> 
+              class="list-group-item border-0"
+            >
             </cms-message-item>
           </div>
         </div>
       </div>
-   <br/>
-      <div class="card-footer bg-white border-top "> 
-        <cms-message-edit
+      <br />
+      <div class="card-footer bg-white border-top">
+        <!-- <cms-message-edit
           (addMessageEvent)="onAddMessage($event)"
           > 
-        </cms-message-edit>
+        </cms-message-edit> -->
+        <cms-message-edit></cms-message-edit>
       </div>
     </div>
   </div>
