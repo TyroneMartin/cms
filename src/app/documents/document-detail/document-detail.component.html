@@ -1,10 +1,10 @@
-<div class="panel panel-default" xmlns="http://www.w3.org/1999/html" *ngIf="document">
+<div class="panel panel-default" *ngIf="document">
   <div class="panel-heading">
     <div class="row pad-all">
       <h4 class="title margin-left-right">{{document.name}}</h4>
-      <div class="btn-group ">
+      <div class="btn-group">
         <a class="btn btn-primary">View</a>
-        <a class="btn btn-info">Edit</a>
+        <a class="btn btn-info" [routerLink]="['edit']">Edit</a>
         <a class="btn btn-danger">Delete</a>
       </div>
     </div>
