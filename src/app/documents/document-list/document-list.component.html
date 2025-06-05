@@ -1,13 +1,13 @@
 <div class="center-panel">
   <div class="documents-header">
     <h1 class="title">Documents</h1>
-    <button class="btn btn-primary">Add Document</button>
+    <a class="btn btn-primary" [routerLink]="['new']">Add Document</a>
   </div>
   <div class="documents-grid">
     <cms-document-item 
       *ngFor="let documentElement of documents"
       [document]="documentElement"
-      (click)="onSelectedDocument(documentElement)">
+      [routerLink]="[documentElement.id]">
     </cms-document-item>
   </div>
 </div>

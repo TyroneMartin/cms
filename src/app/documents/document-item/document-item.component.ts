@@ -11,4 +11,9 @@ import { CommonModule } from '@angular/common';
 })
 export class DocumentItemComponent {
   @Input() document!: Document;
+  @Output() documentSelected = new EventEmitter<void>();
+
+  onClick() {
+    this.documentSelected.emit();
+  }
 }

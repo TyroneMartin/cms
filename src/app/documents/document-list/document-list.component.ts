@@ -1,30 +1,20 @@
 import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { DocumentItemComponent } from '../document-item/document-item.component';
 import { Document } from '../document.model';
-import { CommonModule } from '@angular/common';
 import { DocumentService } from '../document.service';
 
 @Component({
   selector: 'cms-document-list',
   standalone: true,
-  imports: [DocumentItemComponent, CommonModule],
+  imports: [DocumentItemComponent, CommonModule, RouterModule],
   templateUrl: './document-list.component.html',
   styleUrl: './document-list.component.css',
 })
-// export class DocumentListComponent {
 export class DocumentListComponent implements OnInit {
-
-  // @Output() selectedDocumentEvent = new EventEmitter<Document>();
-
-  // documents: Document[] = [
-  //   new Document('1', 'My Senior Project', 'Summary for my senior project', 'https://example.com/senior-project.pdf', []),
-  //   new Document('2', 'My SQL Notes', 'Notes from my SQL class', 'https://example.com/sql-notes.pdf', []),
-  //   new Document('3', 'Software Best Practices', 'Technical requirements and specifications', 'https://example.com/software-best-practices.pdf', []),
-  //   new Document('4', 'Web Application User Guide', 'User guide for the application', 'https://example.com/web-app-user-guide.pdf', []),
-  //   new Document('5', 'Professional Readiness', 'Financial breakdown for Q2', 'https://example.com/professional-readiness.pdf', [])
-  // ];
-
   documents: Document[] = [];
+  selectedDocument: Document | null = null;
 
   constructor(private documentService: DocumentService) {}
 
@@ -32,8 +22,7 @@ export class DocumentListComponent implements OnInit {
     this.documents = this.documentService.getDocuments();
   }
 
-  onSelectedDocument(document: Document) {
-    // this.selectedDocumentEvent.emit(document);
-    this.documentService.documentSelectedEvent.emit(document);
+  onSelected(document: Document) {
+    this.selectedDocument = document;
   }
 }
