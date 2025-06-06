@@ -1,28 +1,22 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { DocumentItemComponent } from '../document-item/document-item.component';
+import { Component, Output, EventEmitter } from '@angular/core';
 import { Document } from '../document.model';
-import { DocumentService } from '../document.service';
+import { DocumentItemComponent } from '../document-item/document-item.component';
+import { CommonModule } from '@angular/common';
+import { MOCKDOCUMENTS } from '../MOCKDOCUMENTS';
 
 @Component({
   selector: 'cms-document-list',
   standalone: true,
-  imports: [DocumentItemComponent, CommonModule, RouterModule],
+  imports: [DocumentItemComponent, CommonModule],
   templateUrl: './document-list.component.html',
-  styleUrl: './document-list.component.css',
+  styleUrl: './document-list.component.css'
 })
-export class DocumentListComponent implements OnInit {
-  documents: Document[] = [];
-  selectedDocument: Document | null = null;
+export class DocumentListComponent {
+  @Output() documentWasSelected = new EventEmitter<Document>();
+  
+  documents: Document[] = MOCKDOCUMENTS;
 
-  constructor(private documentService: DocumentService) {}
-
-  ngOnInit() {
-    this.documents = this.documentService.getDocuments();
-  }
-
-  onSelected(document: Document) {
-    this.selectedDocument = document;
+  onDocumentSelected(document: Document) {
+    this.documentWasSelected.emit(document);
   }
 }
