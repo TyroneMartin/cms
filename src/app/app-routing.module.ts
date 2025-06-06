@@ -8,13 +8,20 @@ import { DocumentEditComponent } from './documents/document-edit/document-edit.c
 
 export const appRoutes: Routes = [
   { path: '', redirectTo: '/documents', pathMatch: 'full' },
-  { path: 'documents', component: DocumentsComponent },
+  {
+    path: 'documents',
+    component: DocumentsComponent,
+    children: [
+      { path: 'new', component: DocumentEditComponent },
+      { path: ':id', component: DocumentDetailComponent },
+      { path: ':id/edit', component: DocumentEditComponent }
+    ]
+  },
   { path: 'messages', component: MessageListComponent },
   { path: 'contacts', component: ContactsComponent },
-  { path: 'documents/new', component: DocumentEditComponent },
-  { path: 'documents/:id', component: DocumentDetailComponent },
-  { path: 'documents/:id/edit', component: DocumentEditComponent }
+  { path: '**', redirectTo: '/documents' }
 ];
+
 
 @NgModule({
   imports: [RouterModule.forRoot(appRoutes)],

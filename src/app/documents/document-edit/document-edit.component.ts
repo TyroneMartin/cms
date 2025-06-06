@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
-import { DocumentListComponent } from '../document-list/document-list.component';
+// import { DocumentListComponent } from '../document-list/document-list.component';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'cms-document-edit',
   standalone: true,
-  imports: [DocumentListComponent, RouterModule, CommonModule],
+  imports: [RouterModule, CommonModule],
   templateUrl: './document-edit.component.html',
   styleUrl: './document-edit.component.css'
 })

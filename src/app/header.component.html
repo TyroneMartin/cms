@@ -1,9 +1,22 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light" style="padding: 12px">
+<nav
+  class="navbar navbar-expand-lg navbar-light bg-light"
+  style="padding: 12px"
+>
   <a class="navbar-brand" href="#">WeLearn CMS</a>
   <div class="collapse navbar-collapse">
     <ul class="navbar-nav mr-auto">
-      <li class="nav-item" routerLinkActive="active">
+      <!-- <li class="nav-item" routerLinkActive="active">
         <a class="nav-link" [routerLink]="['/documents']">Documents</a>
+      </li> -->
+      <li class="nav-item">
+        <a
+          class="nav-link"
+          [routerLink]="['/documents']"
+          routerLinkActive="active"
+          #rla="routerLinkActive"
+          [class.active]="rla.isActive"
+          >Documents</a
+        >
       </li>
       <li class="nav-item" routerLinkActive="active">
         <a class="nav-link" [routerLink]="['/messages']">Messages</a>
@@ -14,7 +27,12 @@
     </ul>
     <ul class="navbar-nav ml-auto">
       <li class="nav-item dropdown" appDropdown>
-        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button">
+        <a
+          class="nav-link dropdown-toggle"
+          href="#"
+          id="userDropdown"
+          role="button"
+        >
           User
         </a>
         <div class="dropdown-menu">

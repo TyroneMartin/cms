@@ -1,9 +1,46 @@
 .documentDiv {
-  width: 9rem;
-  height: 11rem;
-  margin: 2px;
-  font-size: 1.3rem;
-  border: solid thin darkgrey;
-  float: left;
-  padding: .25rem
+  width: 140px;
+  height: 120px;
+  margin: 8px;
+  font-size: 0.85rem;
+  border: 1px solid #ccc;
+  display: inline-block;
+  padding: 8px;
+  text-decoration: none;
+  color: #333;
+  background-color: #f9f9f9;
+  vertical-align: top;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.documentDiv:hover {
+  background-color: #e9e9e9;
+  border-color: #999;
+  text-decoration: none;
+  color: #333;
+}
+
+.documentDiv.active {
+  background-color: #007bff;
+  color: white;
+  border-color: #0056b3;
+}
+
+.documentDiv h4 {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: normal;
+  line-height: 1.2;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  display: -webkit-box;
+  /* -webkit-line-clamp: 6; */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  align-items: flex-start;
 }
