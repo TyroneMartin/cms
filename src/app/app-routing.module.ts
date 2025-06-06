@@ -6,7 +6,7 @@ import { ContactsComponent } from './contacts/contacts.component';
 // import { DocumentDetailComponent } from './documents/document-detail/document-detail.component';
 // import { DocumentEditComponent } from './documents/document-edit/document-edit.component';
 
-const appRoutes: Routes = [
+export const appRoutes: Routes = [
   { path: '', redirectTo: '/documents', pathMatch: 'full' },
   { path: 'documents', component: DocumentsComponent },
   { path: 'messages', component: MessageListComponent },

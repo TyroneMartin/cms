@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Document } from '../document.model';
 import { CommonModule } from '@angular/common';
 
@@ -10,10 +10,12 @@ import { CommonModule } from '@angular/common';
   styleUrl: './document-item.component.css'
 })
 export class DocumentItemComponent {
-  @Input() document!: Document;
-  @Output() documentSelected = new EventEmitter<void>();
+  @Input() document?: Document;
+  @Output() documentSelected = new EventEmitter<Document>();
 
   onClick() {
-    this.documentSelected.emit();
+    if (this.document) {
+      this.documentSelected.emit(this.document);
+    }
   }
 }
