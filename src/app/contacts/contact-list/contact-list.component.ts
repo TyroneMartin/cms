@@ -3,48 +3,27 @@ import { CommonModule } from '@angular/common';
 import { Contact } from '../contact.model';
 import { ContactItemComponent } from '../contact-item/contact-item.component';
 import { ContactService } from '../contact.service';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'cms-contact-list',
   standalone: true,
-  imports: [CommonModule, ContactItemComponent],
+  imports: [CommonModule, ContactItemComponent, RouterModule],
   templateUrl: './contact-list.component.html',
-  styleUrl: './contact-list.component.css',
+  styleUrl: './contact-list.component.css'
 })
-// export class ContactListComponent {
-//   @Output() selectedContactEvent = new EventEmitter<Contact>();
-  // contacts: Contact[] = [
-  //   new Contact(
-  //     '1',
-  //     'R. Kent Jackson',
-  //     'jacksonk@byui.edu',
-  //     '208-496-3771',
-  //     'assets/images/jacksonk.jpg',
-  //     []
-  //   ),
-  //   new Contact(
-  //     '2',
-  //     'Rex Barzee',
-  //     'barzeer@byui.edu',
-  //     '208-496-3768',
-  //     'assets/images/barzeer.jpg',
-  //     []
-  //   ),
-  // ];
-
-  export class ContactListComponent implements OnInit {
-  // @Output() selectedContactEvent = new EventEmitter<Contact>();
+export class ContactListComponent implements OnInit {
   contacts: Contact[] = [];
 
   constructor(private contactService: ContactService) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.contacts = this.contactService.getContacts();
-  }
-
-
-  onSelected(contact: Contact) {
-    // this.selectedContactEvent.emit(contact);
-    this.contactService.contactSelectedEvent.emit(contact);
+    
+    this.contactService.contactChangedEvent.subscribe(
+      (contacts: Contact[]) => {
+        this.contacts = contacts;
+      }
+    );
   }
 }

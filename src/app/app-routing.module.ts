@@ -20,15 +20,16 @@ export const appRoutes: Routes = [
       { path: ':id/edit', component: DocumentEditComponent }
     ]
   },
-  { path: 'messages', component: MessageListComponent, 
-    children: [
+  { path: 'messages', component: MessageListComponent},
+  { path: 'contacts', component: ContactsComponent,
+        children: [
       { path: 'new', component: ContactEditComponent },
       { path: ':id', component: ContactDetailComponent },
       { path: ':id/edit', component: ContactEditComponent }
     ]
    },
-  { path: 'contacts', component: ContactsComponent },
-  { path: '**', redirectTo: '/documents' }
+  { path: '**', redirectTo: '/documents,' }
+
 ];
 
 

@@ -10,6 +10,8 @@ export class ContactService {
   contacts: Contact[] = [];
   
   contactSelectedEvent = new EventEmitter<Contact>();
+  contactChangedEvent  = new EventEmitter<Contact>();
+
   constructor() {
     this.contacts = MOCKCONTACTS;
   }
@@ -21,7 +23,7 @@ export class ContactService {
   getContact(id: string): Contact | null {
     for (let contact of this.contacts) {
       if (contact.id === id) {
-        console.log('Looking for contact', id, 'Found:', contact); 
+        // console.log('Looking for contact', id, 'Found:', contact); 
         return contact;
       }
     }

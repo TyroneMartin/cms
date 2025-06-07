@@ -1,17 +1,23 @@
-<div class="card mb-3" (click)="onSelected()">
-  <div class="row g-0 align-items-center">
-    <div class="col-md-10">
-      <div class="card-body">
-        <h5 class="card-title">{{ contact.name }}</h5>
+<a [routerLink]="[contact.id]" 
+   routerLinkActive="active"
+   #rla="routerLinkActive"
+   [class.active]="rla.isActive"
+   class="text-decoration-none">
+  <div class="card mb-3">
+    <div class="row g-0 align-items-center">
+      <div class="col-md-10">
+        <div class="card-body">
+          <h5 class="card-title">{{ contact.name }}</h5>
+        </div>
+      </div>
+      <div class="col-md-2 text-end pe-3">
+        <img
+          [src]="contact.imageUrl"
+          class="img-fluid rounded"
+          alt="{{ contact.name }}"
+          style="max-height: 150px"
+        />
       </div>
     </div>
-    <div class="col-md-2 text-end pe-3">
-      <img
-        [src]="contact.imageUrl"
-        class="img-fluid rounded"
-        alt="{{ contact.name }}"
-        style="max-height: 150px"
-      />
-    </div>
   </div>
-</div>
+</a>
