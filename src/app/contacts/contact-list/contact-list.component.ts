@@ -1,16 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { Contact } from '../contact.model';
-import { ContactItemComponent } from '../contact-item/contact-item.component';
 import { ContactService } from '../contact.service';
+import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { ContactItemComponent } from '../contact-item/contact-item.component';
 
 @Component({
   selector: 'cms-contact-list',
   standalone: true,
-  imports: [CommonModule, ContactItemComponent, RouterModule],
+  imports: [CommonModule, RouterModule, ContactItemComponent],
   templateUrl: './contact-list.component.html',
-  styleUrl: './contact-list.component.css'
+  styleUrls: ['./contact-list.component.css']
 })
 export class ContactListComponent implements OnInit {
   contacts: Contact[] = [];
@@ -19,11 +19,9 @@ export class ContactListComponent implements OnInit {
 
   ngOnInit(): void {
     this.contacts = this.contactService.getContacts();
-    
-    this.contactService.contactChangedEvent.subscribe(
-      (contacts: Contact[]) => {
-        this.contacts = contacts;
-      }
-    );
+
+    this.contactService.contactChangedEvent.subscribe((updatedContacts: Contact[]) => {
+      this.contacts = updatedContacts;
+    });
   }
 }
