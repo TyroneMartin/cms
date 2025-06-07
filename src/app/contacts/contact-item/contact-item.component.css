@@ -1,0 +1,15 @@
+.contactDiv .card.active {
+  background-color: #304b69;
+  color: white;
+  border-color: #0056b3;
+}
+
+.contactDiv .card.active .card-title {
+  color: white;
+}
+
+.contactDiv .card:hover {
+  border-color: #999;
+  text-decoration: none;
+  color: #333;
+}

@@ -1,9 +1,8 @@
-<a [routerLink]="[contact.id]" 
-   routerLinkActive="active"
-   #rla="routerLinkActive"
-   [class.active]="rla.isActive"
-   class="text-decoration-none">
-  <div class="card mb-3">
+<a [routerLink]="[contact.id]" class="text-decoration-none contactDiv">
+  <div class="card mb-3"
+       routerLinkActive="active"
+       #rla="routerLinkActive"
+       [class.active]="rla.isActive">
     <div class="row g-0 align-items-center">
       <div class="col-md-10">
         <div class="card-body">
