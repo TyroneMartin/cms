@@ -1,9 +1,8 @@
-<!-- <a class="list-group-item clearfix documentDiv" >
-     {{document.name}}
-
-</a> -->
-<a class="list-group-item clearfix documentDiv">
-  <div class="pull-left">
-    <h4 class="list-group-item-heading">{{ document.name }}</h4>
-  </div>
+<a [routerLink]="[document.id]"
+   routerLinkActive="active"
+   #rla="routerLinkActive"
+   [class.active]="rla.isActive"
+   class="documentDiv"
+   *ngIf="document">
+  <h4>{{ document.name }}</h4>
 </a>

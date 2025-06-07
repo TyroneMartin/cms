@@ -1,39 +1,38 @@
-import { Component, OnInit } from '@angular/core';
-import { DocumentItemComponent } from '../document-item/document-item.component';
+import { Component, Output, EventEmitter, OnInit } from '@angular/core';
 import { Document } from '../document.model';
+import { DocumentItemComponent } from '../document-item/document-item.component';
 import { CommonModule } from '@angular/common';
+import { MOCKDOCUMENTS } from '../MOCKDOCUMENTS';
+import { RouterModule } from '@angular/router';
 import { DocumentService } from '../document.service';
 
 @Component({
   selector: 'cms-document-list',
   standalone: true,
-  imports: [DocumentItemComponent, CommonModule],
+  imports: [DocumentItemComponent, CommonModule, RouterModule],
   templateUrl: './document-list.component.html',
   styleUrl: './document-list.component.css',
 })
-// export class DocumentListComponent {
-export class DocumentListComponent implements OnInit {
-
-  // @Output() selectedDocumentEvent = new EventEmitter<Document>();
-
-  // documents: Document[] = [
-  //   new Document('1', 'My Senior Project', 'Summary for my senior project', 'https://example.com/senior-project.pdf', []),
-  //   new Document('2', 'My SQL Notes', 'Notes from my SQL class', 'https://example.com/sql-notes.pdf', []),
-  //   new Document('3', 'Software Best Practices', 'Technical requirements and specifications', 'https://example.com/software-best-practices.pdf', []),
-  //   new Document('4', 'Web Application User Guide', 'User guide for the application', 'https://example.com/web-app-user-guide.pdf', []),
-  //   new Document('5', 'Professional Readiness', 'Financial breakdown for Q2', 'https://example.com/professional-readiness.pdf', [])
-  // ];
+export class DocumentListComponent {
+  @Output() documentWasSelected = new EventEmitter<Document>();
 
   documents: Document[] = [];
 
-  constructor(private documentService: DocumentService) {}
+  constructor(private documentService: DocumentService) {
+    this.documents = MOCKDOCUMENTS;
+  }
 
   ngOnInit() {
     this.documents = this.documentService.getDocuments();
+
+    this.documentService.documentChangedEvent.subscribe(
+      (documents: Document[]) => {
+        this.documents = documents;
+      }
+    );
   }
 
-  onSelectedDocument(document: Document) {
-    // this.selectedDocumentEvent.emit(document);
-    this.documentService.documentSelectedEvent.emit(document);
+  onDocumentSelected(document: Document) {
+    this.documentWasSelected.emit(document);
   }
 }

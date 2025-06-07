@@ -1,27 +1,37 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ContactService } from '../contact.service';
 import { Contact } from '../contact.model';
 
 @Component({
   selector: 'cms-contact-detail',
-  standalone: true,
-  imports: [CommonModule],
   templateUrl: './contact-detail.component.html',
-  styleUrls: ['./contact-detail.component.css'],
+  styleUrls: ['./contact-detail.component.css']
 })
 export class ContactDetailComponent implements OnInit {
-  @Input() contact!: Contact;
-  //  constructor() {}      
+  contact: Contact | null = null;
 
-  ngOnInit() {
-    console.log("ContactDetailComponent initialized");
+  constructor(
+    private contactService: ContactService,
+    private route: ActivatedRoute,
+    private router: Router
+  ) {}
+
+  ngOnInit(): void {
+    const id = this.route.snapshot.params['id'];
+    this.contact = this.contactService.getContact(id);
   }
 
-  onEdit() {
-    console.log('Edit button clicked');
+  onDelete(): void {
+    if (this.contact) {
+      this.contactService.deleteContact(this.contact);
+      this.router.navigateByUrl('/contacts');
+    }
   }
 
-  onDelete() {
-    console.log('Delete button clicked');
+  onEdit(): void {
+    if (this.contact) {
+      this.router.navigate(['/contacts', this.contact.id, 'edit']);
+    }
   }
 }

@@ -1,19 +1,26 @@
-import { Component, Input, EventEmitter, Output } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router, RouterModule } from '@angular/router';
 import { Contact } from '../contact.model';
+import { ContactService } from '../contact.service';
 
 @Component({
   selector: 'cms-contact-item',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './contact-item.component.html',
   styleUrl: './contact-item.component.css'
 })
 export class ContactItemComponent {
   @Input() contact!: Contact;
-  @Output() contactSelected = new EventEmitter<void>();
+
+  constructor(
+    private router: Router,
+    private contactService: ContactService
+  ) {}
 
   onSelected() {
-    this.contactSelected.emit();
+    this.router.navigate(['/contacts', this.contact.id]);
+    this.contactService.contactSelectedEvent.emit(this.contact);
   }
 }
