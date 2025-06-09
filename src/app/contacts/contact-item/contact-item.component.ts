@@ -1,8 +1,8 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { Contact } from '../contact.model';
-import { ContactService } from '../contact.service';
+// import { ContactService } from '../contact.service';
 
 @Component({
   selector: 'cms-contact-item',
@@ -14,13 +14,8 @@ import { ContactService } from '../contact.service';
 export class ContactItemComponent {
   @Input() contact!: Contact;
 
-  constructor(
-    private router: Router,
-    private contactService: ContactService
-  ) {}
-
-  onSelected() {
-    this.router.navigate(['/contacts', this.contact.id]);
-    this.contactService.contactSelectedEvent.emit(this.contact);
-  }
+  // constructor(
+  //   private router: Router,
+  //   private contactService: ContactService
+  // ) {}
 }
