@@ -1,12 +1,13 @@
 <div class="panel panel-default">
   <div class="panel-body">
-    <form id="contact-edit">
+    <form id="contact-edit" (ngSubmit)="onSubmit(contactForm)" #contactForm="ngForm">
       <div class="row">
         <div class="col-sm-12 form-group">
           <label for="name">Name:</label>
           <input
             type="text"
             id="name"
+            name="name"
             required
             [(ngModel)]="contact.name"
             #name="ngModel"
@@ -25,6 +26,7 @@
             name="email"
             required
             [(ngModel)]="contact.email"
+            #email="ngModel"
             id="email"
             pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$"
             class="form-control required"
@@ -50,7 +52,7 @@
             [(ngModel)]="contact.phone"
             pattern="\D*([2-9]\d{2})(\D*)([2-9]\d{2})(\D*)(\d{4})\D*"
             #phone="ngModel"
-            class="form-control invalid"
+            class="form-control"
             size="150"
             max="255"
           />
@@ -81,19 +83,22 @@
       <div class="row">
         <div class="form-group">
           <label for="groupList">Group Contacts:</label>
+
           <div
-            class="row"
+            class="row drop-zone"
             id="groupList"
             cdkDropList
+            [cdkDropListData]="groupContacts"
             (cdkDropListDropped)="drop($event)"
-            style="min-height: 3rem"
+            style="min-height: 3rem; border: 2px dashed #ccc; padding: 10px; margin: 10px 0;"
           >
-            <div *ngFor="let contact of groupContacts; let i = index">
+            <div *ngFor="let contact of groupContacts; let i = index" class="group-contact-item">
               <cms-contact-item
-                class="col-sm-11"
+                class="col-sm-10"
                 [contact]="contact"
               ></cms-contact-item>
               <button
+                type="button"
                 class="btn btn-danger col-sm-2 deleteButton"
                 (click)="onRemoveItem(i)"
               >
