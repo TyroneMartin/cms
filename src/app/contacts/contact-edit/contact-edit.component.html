@@ -89,25 +89,28 @@
             id="groupList"
             cdkDropList
             [cdkDropListData]="groupContacts"
-            (cdkDropListDropped)="drop($event)"
-            style="min-height: 3rem; border: 2px dashed #ccc; padding: 10px; margin: 10px 0;"
+            (cdkDropListDropped)="onDropSuccess($event)"
+            cdkDropListSortingDisabled
+            [cdkDropListConnectedTo]="[]"
+            style="min-height: 100px; border: 2px dashed #ccc; padding: 15px; margin: 10px 0; background-color: #f9f9f9;"
           >
-            <div *ngFor="let contact of groupContacts; let i = index" class="group-contact-item">
-              <cms-contact-item
-                class="col-sm-10"
-                [contact]="contact"
-              ></cms-contact-item>
+            <div *ngFor="let contact of groupContacts; let i = index" class="group-contact-item" style="display: flex; align-items: center; margin-bottom: 10px; background-color: white; border: 1px solid #ddd; border-radius: 4px; padding: 5px;">
+              <div class="col-sm-10" style="flex: 1;">
+                <cms-contact-item [contact]="contact"></cms-contact-item>
+              </div>
               <button
                 type="button"
-                class="btn btn-danger col-sm-2 deleteButton"
+                class="btn btn-danger btn-sm"
                 (click)="onRemoveItem(i)"
+                style="margin-left: 10px;"
+                title="Remove from group"
               >
                 X
               </button>
             </div>
-            <span class="dragMsg" *ngIf="groupContacts?.length < 1">
-              Drag contacts in group here
-            </span>
+            <div class="dragMsg" *ngIf="groupContacts.length < 1" style="text-align: center; color: #999; font-style: italic; padding: 20px;">
+              Drag contacts from the left into this area to add them to the group
+            </div>
           </div>
         </div>
       </div>

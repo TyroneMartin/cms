@@ -5,14 +5,14 @@ import { Contact } from '../contact.model';
 import { NgForm, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ContactItemComponent } from '../contact-item/contact-item.component';
-import { DragDropModule, CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
+import { DragDropModule, CdkDragDrop } from '@angular/cdk/drag-drop';
 
 @Component({
   standalone: true,
   selector: 'cms-contact-edit',
   templateUrl: './contact-edit.component.html',
   styleUrls: ['./contact-edit.component.css'],
-  imports: [CommonModule, FormsModule, ContactItemComponent, DragDropModule]
+  imports: [CommonModule, FormsModule, ContactItemComponent, DragDropModule,],
 })
 export class ContactEditComponent implements OnInit {
   originalContact!: Contact;
@@ -25,7 +25,10 @@ export class ContactEditComponent implements OnInit {
     private contactService: ContactService,
     private router: Router,
     private route: ActivatedRoute
-  ) {}
+  ) {
+    // Explicitly initialize groupContacts to avoid undefined issues
+    this.groupContacts = [];
+  }
 
   ngOnInit(): void {
     this.route.params.subscribe((params: Params) => {
@@ -73,28 +76,50 @@ export class ContactEditComponent implements OnInit {
     this.router.navigate(['/contacts']);
   }
 
-  drop(event: CdkDragDrop<Contact[]>) {
-    if (event.previousContainer === event.container) {
-      return;
+  // Method called when a contact is dropped into the group area
+  onDropSuccess(event: CdkDragDrop<Contact[]>) {
+    // Handle drops from external sources (contact list)
+    if (event.previousContainer !== event.container) {
+      const droppedContact: Contact = event.item.data;
+      
+      // Use the addToGroup method to handle the logic
+      this.addToGroup({ dragData: droppedContact });
     }
-
-    const droppedContact: Contact = event.item.data;
-    
-    if (this.isInvalidContact(droppedContact)) {
-      return;
-    }
-
-    this.groupContacts.push(droppedContact);
   }
 
+  // Method to add a contact to the group (following the instruction pattern)
+  addToGroup($event: any) {
+    const selectedContact: Contact = $event.dragData;
+    const invalidGroupContact = this.isInvalidContact(selectedContact);
+    if (invalidGroupContact) {
+      // You could add a toast notification or alert here to show the error
+      console.warn('Cannot add contact: Contact is invalid or already in group');
+      return;
+    }
+    this.groupContacts.push(selectedContact);
+  }
+
+  // Method to check if contact is already in the group (following the instruction pattern)
   isInvalidContact(newContact: Contact): boolean {
-    if (!newContact) return true;
-    if (this.contact && newContact.id === this.contact.id) return true;
-    return this.groupContacts.some(c => c.id === newContact.id);
+    if (!newContact) { // newContact has no value
+      return true;
+    }
+    if (this.contact && newContact.id === this.contact.id) {
+      return true;
+    }
+    for (let i = 0; i < this.groupContacts.length; i++) {
+      if (newContact.id === this.groupContacts[i].id) {
+        return true;
+      }
+    }
+    return false;
   }
 
+  // Method to remove a contact from the group (following the instruction pattern)
   onRemoveItem(index: number): void {
-    if (index < 0 || index >= this.groupContacts.length) return;
+    if (index < 0 || index >= this.groupContacts.length) {
+      return;
+    }
     this.groupContacts.splice(index, 1);
   }
 }

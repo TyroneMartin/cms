@@ -5,12 +5,13 @@
   </div>
 
   <div class="card-body">
-    <div class="row" cdkDropListGroup>
+    <div class="row">
       <div class="col-md-12" *ngFor="let contact of contacts">
         <div
           cdkDrag
           [cdkDragData]="contact"
           class="drag-item"
+          style="cursor: move; margin-bottom: 5px;"
         >
           <cms-contact-item [contact]="contact"></cms-contact-item>
         </div>
