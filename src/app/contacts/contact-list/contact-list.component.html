@@ -5,9 +5,11 @@
   </div>
 
   <div class="card-body">
-    <div class="row">
+    <div class="row" cdkDropListGroup>
       <div class="col-md-12" *ngFor="let contact of contacts">
-        <cms-contact-item [contact]="contact"></cms-contact-item>
+        <div cdkDrag [cdkDragData]="contact">
+          <cms-contact-item [contact]="contact"></cms-contact-item>
+        </div>
       </div>
     </div>
   </div>

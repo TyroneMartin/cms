@@ -5,11 +5,12 @@ import { ContactService } from '../contact.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ContactItemComponent } from '../contact-item/contact-item.component';
+import { DndModule } from 'ng2-dnd';
 
 @Component({
   selector: 'cms-contact-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, ContactItemComponent],
+  imports: [CommonModule, RouterModule, ContactItemComponent, DndModule],
   templateUrl: './contact-list.component.html',
   styleUrls: ['./contact-list.component.css']
 })
