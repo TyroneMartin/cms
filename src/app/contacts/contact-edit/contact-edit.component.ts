@@ -4,15 +4,15 @@ import { ContactService } from '../contact.service';
 import { Contact } from '../contact.model';
 import { NgForm, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { DndModule } from 'ng2-dnd';
 import { ContactItemComponent } from '../contact-item/contact-item.component';
+import { DragDropModule, CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
 
 @Component({
   standalone: true,
   selector: 'cms-contact-edit',
   templateUrl: './contact-edit.component.html',
   styleUrls: ['./contact-edit.component.css'],
-  imports: [CommonModule, FormsModule, DndModule, ContactItemComponent]
+  imports: [CommonModule, FormsModule, ContactItemComponent, DragDropModule]
 })
 export class ContactEditComponent implements OnInit {
   originalContact!: Contact;
@@ -73,10 +73,18 @@ export class ContactEditComponent implements OnInit {
     this.router.navigate(['/contacts']);
   }
 
-  addToGroup($event: any) {
-    const selectedContact: Contact = $event.dragData;
-    if (this.isInvalidContact(selectedContact)) return;
-    this.groupContacts.push(selectedContact);
+  drop(event: CdkDragDrop<Contact[]>) {
+    if (event.previousContainer === event.container) {
+      return;
+    }
+
+    const droppedContact: Contact = event.item.data;
+    
+    if (this.isInvalidContact(droppedContact)) {
+      return;
+    }
+
+    this.groupContacts.push(droppedContact);
   }
 
   isInvalidContact(newContact: Contact): boolean {
