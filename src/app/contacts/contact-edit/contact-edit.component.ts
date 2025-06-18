@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { NgForm, FormsModule } from '@angular/forms';
-import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
+import { CdkDragDrop, DragDropModule, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import { Contact } from '../contact.model';
 import { ContactService } from '../contact.service';
@@ -90,9 +90,27 @@ export class ContactEditComponent implements OnInit {
     return this.groupContacts.some(c => c.id === newContact.id);
   }
 
-  onDrop(event: CdkDragDrop<any>): void {
-    const draggedContact: Contact = event.item.data;
-    if (this.isInvalidContact(draggedContact)) return;
-    this.groupContacts.push(draggedContact);
+  onDrop(event: CdkDragDrop<Contact[]>): void {
+    if (event.previousContainer === event.container) {
+      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+    } else {
+      const draggedContact = event.previousContainer.data[event.previousIndex];
+      
+      if (this.isInvalidContact(draggedContact)) {
+        return;
+      }
+      
+      const contactCopy = JSON.parse(JSON.stringify(draggedContact));
+      this.groupContacts.push(contactCopy);
+    }
+  }
+
+  addToGroup(contact: Contact): void {
+    if (this.isInvalidContact(contact)) {
+      return;
+    }
+    
+    const contactCopy = JSON.parse(JSON.stringify(contact));
+    this.groupContacts.push(contactCopy);
   }
 }

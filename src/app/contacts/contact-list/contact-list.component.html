@@ -1,19 +1,32 @@
-<div class="card">
-  <div class="card-header d-flex justify-content-between align-items-center">
-    <h5 class="mb-0">Contacts</h5>
-    <a [routerLink]="['new']" class="btn btn-success btn-sm">New Contact</a>
-  </div>
-
-  <div class="card-body">
+<div class="panel panel-default">
+  <div class="panel-heading">
     <div class="row">
-      <div class="col-md-12" *ngFor="let contact of contacts">
-        <div
-          cdkDrag
-          [cdkDragData]="contact"
-          class="drag-item"
-          style="cursor: move; margin-bottom: 5px;"
-        >
-          <cms-contact-item [contact]="contact"></cms-contact-item>
+      <div class="col-xs-9">
+        <h4>Contacts</h4>
+      </div>
+      <div class="col-xs-3">
+        <a class="btn btn-success" [routerLink]="['new']">New Contact</a>
+      </div>
+    </div>
+  </div>
+  <div class="panel-body">
+    <div class="row">
+      <div class="col-xs-12">
+        <!-- Draggable contact list -->
+        <div 
+          cdkDropList 
+          #contactList="cdkDropList"
+          [cdkDropListData]="contacts"
+          [cdkDropListConnectedTo]="[]"
+          class="contact-list">
+          
+          <div 
+            *ngFor="let contact of contacts" 
+            cdkDrag
+            [cdkDragData]="contact"
+            class="contact-drag-item">
+            <cms-contact-item [contact]="contact"></cms-contact-item>
+          </div>
         </div>
       </div>
     </div>
