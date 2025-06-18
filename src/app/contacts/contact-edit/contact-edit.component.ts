@@ -1,125 +1,129 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ContactService } from '../contact.service';
 import { Contact } from '../contact.model';
-import { NgForm, FormsModule } from '@angular/forms';
+import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
-import { ContactItemComponent } from '../contact-item/contact-item.component';
-import { DragDropModule, CdkDragDrop } from '@angular/cdk/drag-drop';
+import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @Component({
-  standalone: true,
   selector: 'cms-contact-edit',
+  standalone: true,
+  imports: [CommonModule, FormsModule, RouterModule, DragDropModule],
   templateUrl: './contact-edit.component.html',
-  styleUrls: ['./contact-edit.component.css'],
-  imports: [CommonModule, FormsModule, ContactItemComponent, DragDropModule,],
+  styleUrls: ['./contact-edit.component.css']
 })
 export class ContactEditComponent implements OnInit {
-  originalContact!: Contact;
-  contact!: Contact;
+  contact: Contact | null = null;
+  originalContact: Contact | null = null;
+  isEditMode = false;
+  allContacts: Contact[] = [];
+  availableContacts: Contact[] = [];
   groupContacts: Contact[] = [];
-  editMode: boolean = false;
-  id!: string;
-
+  errorMessage = '';
+  
   constructor(
     private contactService: ContactService,
-    private router: Router,
-    private route: ActivatedRoute
-  ) {
-    // Explicitly initialize groupContacts to avoid undefined issues
-    this.groupContacts = [];
-  }
+    private route: ActivatedRoute,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
-    this.route.params.subscribe((params: Params) => {
-      this.id = params['id'];
-      if (!this.id) {
-        this.editMode = false;
+    this.route.params.subscribe(params => {
+      const id = params['id'];
+      
+      if (id === 'new') {
+        this.isEditMode = false;
         this.contact = new Contact('', '', '', '', '', []);
-        return;
+      } else {
+        this.isEditMode = true;
+        this.contact = this.contactService.getContact(id);
+        if (this.contact) {
+          // Deep copy the original contact for comparison
+          this.originalContact = JSON.parse(JSON.stringify(this.contact));
+          this.groupContacts = [...(this.contact.group || [])];
+        }
       }
-
-      const original = this.contactService.getContact(this.id);
-      if (!original) return;
-
-      this.originalContact = original;
-      this.editMode = true;
-      this.contact = JSON.parse(JSON.stringify(original));
-
-      if (this.originalContact.group) {
-        this.groupContacts = JSON.parse(JSON.stringify(this.originalContact.group));
-      }
+      
+      this.loadAvailableContacts();
     });
   }
 
-  onSubmit(form: NgForm) {
-    const value = form.value;
-    const newContact = new Contact(
-      this.id,
-      value.name,
-      value.email,
-      value.phone,
-      value.imageUrl,
-      this.groupContacts
-    );
-
-    if (this.editMode && this.originalContact) {
-      this.contactService.updateContact(this.originalContact, newContact);
-    } else {
-      this.contactService.addContact(newContact);
-    }
-
-    this.router.navigate(['/contacts']);
-  }
-
-  onCancel() {
-    this.router.navigate(['/contacts']);
-  }
-
-  // Method called when a contact is dropped into the group area
-  onDropSuccess(event: CdkDragDrop<Contact[]>) {
-    // Handle drops from external sources (contact list)
-    if (event.previousContainer !== event.container) {
-      const droppedContact: Contact = event.item.data;
-      
-      // Use the addToGroup method to handle the logic
-      this.addToGroup({ dragData: droppedContact });
-    }
-  }
-
-  // Method to add a contact to the group (following the instruction pattern)
-  addToGroup($event: any) {
-    const selectedContact: Contact = $event.dragData;
-    const invalidGroupContact = this.isInvalidContact(selectedContact);
-    if (invalidGroupContact) {
-      // You could add a toast notification or alert here to show the error
-      console.warn('Cannot add contact: Contact is invalid or already in group');
-      return;
-    }
-    this.groupContacts.push(selectedContact);
-  }
-
-  // Method to check if contact is already in the group (following the instruction pattern)
-  isInvalidContact(newContact: Contact): boolean {
-    if (!newContact) { // newContact has no value
-      return true;
-    }
-    if (this.contact && newContact.id === this.contact.id) {
-      return true;
-    }
-    for (let i = 0; i < this.groupContacts.length; i++) {
-      if (newContact.id === this.groupContacts[i].id) {
-        return true;
+  loadAvailableContacts(): void {
+    this.allContacts = this.contactService.getContacts();
+    
+    this.availableContacts = this.allContacts.filter(contact => {
+      if (this.contact && contact.id === this.contact.id) {
+        return false; 
       }
-    }
-    return false;
+      
+   
+      return !this.groupContacts.some(groupContact => groupContact.id === contact.id);
+    });
   }
 
-  // Method to remove a contact from the group (following the instruction pattern)
-  onRemoveItem(index: number): void {
-    if (index < 0 || index >= this.groupContacts.length) {
-      return;
+  onDrop(event: CdkDragDrop<Contact[]>): void {
+    this.errorMessage = '';
+
+    if (event.previousContainer === event.container) {
+
+      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+    } else {
+  
+      const draggedContact = event.previousContainer.data[event.previousIndex];
+      
+      if (event.container.id === 'group-contacts') {
+        if (this.groupContacts.some(contact => contact.id === draggedContact.id)) {
+          this.errorMessage = 'Contact can not be added to the group. It is already in group or is the current contact';
+          return;
+        }
+        
+        if (this.contact && draggedContact.id === this.contact.id) {
+          this.errorMessage = 'Contact can not be added to the group. It is already in group or is the current contact';
+          return;
+        }
+      }
+      
+      transferArrayItem(
+        event.previousContainer.data,
+        event.container.data,
+        event.previousIndex,
+        event.currentIndex
+      );
+      
+      // Update groupContacts
+      this.loadAvailableContacts();
     }
-    this.groupContacts.splice(index, 1);
   }
+
+  removeFromGroup(contactToRemove: Contact): void {
+    this.groupContacts = this.groupContacts.filter(contact => contact.id !== contactToRemove.id);
+    this.loadAvailableContacts();
+    this.errorMessage = '';
+  }
+
+  onSave(): void {
+    if (!this.contact) return;
+    
+
+    this.contact.group = [...this.groupContacts];
+    
+    if (this.isEditMode) {
+      this.contactService.updateContact(this.originalContact!, this.contact);
+    } else {
+      this.contactService.addContact(this.contact);
+    }
+    
+    this.router.navigate(['/contacts']);
+  }
+
+  onCancel(): void {
+    this.router.navigate(['/contacts']);
+  }
+
+  canDropPredicate = (item: any, drop: any) => {
+    return true;
+  };
 }

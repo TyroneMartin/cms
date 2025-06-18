@@ -87,4 +87,13 @@ export class ContactService {
     const contactsListClone = this.contacts.slice();
     this.contactListChangedEvent.next(contactsListClone);
   }
+
+   isContactInGroup(contactId: string, excludeContactId?: string): boolean {
+    return this.contacts.some(contact => {
+      if (excludeContactId && contact.id === excludeContactId) {
+        return false;
+      }
+      return contact.group && contact.group.some(groupContact => groupContact.id === contactId);
+    });
+  }
 }
