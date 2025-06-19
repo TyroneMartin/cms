@@ -67,10 +67,16 @@
         </div>
       </div>
 
-      <!-- Update the Group Contacts section in contact-edit.component.html -->
+  <!-- Group Contacts -->
 <div class="row">
   <div class="form-group col-sm-12">
     <label for="groupList">Group Contacts:</label>
+
+
+    <div *ngIf="validationMessage" class="alert alert-danger">
+      {{ validationMessage }}
+    </div>
+
     <div
       id="groupList"
       class="row group-drop-zone"
@@ -79,13 +85,14 @@
       [cdkDropListData]="groupContacts"
       cdkDropListConnectedTo="contactList"
       (cdkDropListDropped)="onDrop($event)"
-      style="min-height: 100px; border: 2px dashed #ccc; padding: 10px; margin: 5px 0;">
-
-      <!-- Make each group contact draggable for reordering -->
-      <div *ngFor="let contact of groupContacts; let i = index" 
-           cdkDrag
-           [cdkDragData]="contact"
-           class="col-sm-12 d-flex align-items-center mb-2 group-contact-item">
+      style="min-height: 100px; border: 2px dashed #ccc; padding: 10px; margin: 5px 0;"
+    >
+      <div
+        *ngFor="let contact of groupContacts; let i = index"
+        cdkDrag
+        [cdkDragData]="contact"
+        class="col-sm-12 d-flex align-items-center mb-2 group-contact-item"
+      >
         <div class="col-sm-10">
           <cms-contact-item [contact]="contact"></cms-contact-item>
         </div>
@@ -94,7 +101,8 @@
             class="btn btn-danger btn-sm"
             type="button"
             (click)="onRemoveItem(i)"
-            title="Remove from group">
+            title="Remove from group"
+          >
             X
           </button>
         </div>
@@ -106,6 +114,7 @@
     </div>
   </div>
 </div>
+
       <div class="row">
         <div class="col-sm-12">
           <div *ngIf="(name.invalid && name.touched) || (email.invalid && email.touched)" 

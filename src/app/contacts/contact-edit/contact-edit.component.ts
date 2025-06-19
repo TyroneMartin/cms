@@ -25,6 +25,7 @@ export class ContactEditComponent implements OnInit {
   groupContacts: Contact[] = [];
   editMode: boolean = false;
   id: string = '';
+  validationMessage: string = ''; 
 
   constructor(
     private contactService: ContactService,
@@ -82,42 +83,43 @@ export class ContactEditComponent implements OnInit {
   onRemoveItem(index: number): void {
     if (index < 0 || index >= this.groupContacts.length) return;
     this.groupContacts.splice(index, 1);
+    this.clearValidationMessage(); 
   }
 
   isInvalidContact(newContact: Contact): boolean {
     if (!newContact) return true;
+    
     if (this.contact && newContact.id === this.contact.id) return true;
-    return this.groupContacts.some(c => c.id === newContact.id);
+    
+    if (this.groupContacts.some(c => c.id === newContact.id)) return true;
+    
+    if (this.contactService.isContactInGroup(newContact.id, this.contact?.id)) return true;
+    
+    return false;
+  }
+
+  clearValidationMessage(): void {
+    this.validationMessage = '';
   }
 
   onDrop(event: CdkDragDrop<Contact[]>): void {
-  if (event.previousContainer === event.container) {
-    // Moving within the same container (reordering group contacts)
-    moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-  } else {
-    // Moving from contact list to group contacts
-    const draggedContact = event.previousContainer.data[event.previousIndex];
-    
-    if (this.isInvalidContact(draggedContact)) {
-      return;
+    this.clearValidationMessage();
+
+    if (event.previousContainer === event.container) {
+      // Moving within the same container (reordering group contacts)
+      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+    } else {
+      // Moving from contact list to group contacts
+      const draggedContact = event.previousContainer.data[event.previousIndex];
+      
+      if (this.isInvalidContact(draggedContact)) {
+        this.validationMessage = 
+          'Contact cannot be added to the group. It is already in another group or is the current contact.';
+        return;
+      }
+
+      const contactCopy = JSON.parse(JSON.stringify(draggedContact));
+      this.groupContacts.splice(event.currentIndex, 0, contactCopy);
     }
-    
-    // Create a copy of the contact and add to group
-    const contactCopy = JSON.parse(JSON.stringify(draggedContact));
-    
-    transferArrayItem(
-      event.previousContainer.data,
-      event.container.data,
-      event.previousIndex,
-      event.currentIndex
-    );
-    
-    event.previousContainer.data.splice(event.previousIndex, 0, draggedContact);
   }
-}
-onContactListDrop(event: CdkDragDrop<Contact[]>): void {
-  if (event.previousContainer === event.container) {
-    moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-  }
-}
 }
