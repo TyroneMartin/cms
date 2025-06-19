@@ -91,26 +91,33 @@ export class ContactEditComponent implements OnInit {
   }
 
   onDrop(event: CdkDragDrop<Contact[]>): void {
-    if (event.previousContainer === event.container) {
-      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-    } else {
-      const draggedContact = event.previousContainer.data[event.previousIndex];
-      
-      if (this.isInvalidContact(draggedContact)) {
-        return;
-      }
-      
-      const contactCopy = JSON.parse(JSON.stringify(draggedContact));
-      this.groupContacts.push(contactCopy);
-    }
-  }
-
-  addToGroup(contact: Contact): void {
-    if (this.isInvalidContact(contact)) {
+  if (event.previousContainer === event.container) {
+    // Moving within the same container (reordering group contacts)
+    moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+  } else {
+    // Moving from contact list to group contacts
+    const draggedContact = event.previousContainer.data[event.previousIndex];
+    
+    if (this.isInvalidContact(draggedContact)) {
       return;
     }
     
-    const contactCopy = JSON.parse(JSON.stringify(contact));
-    this.groupContacts.push(contactCopy);
+    // Create a copy of the contact and add to group
+    const contactCopy = JSON.parse(JSON.stringify(draggedContact));
+    
+    transferArrayItem(
+      event.previousContainer.data,
+      event.container.data,
+      event.previousIndex,
+      event.currentIndex
+    );
+    
+    event.previousContainer.data.splice(event.previousIndex, 0, draggedContact);
   }
+}
+onContactListDrop(event: CdkDragDrop<Contact[]>): void {
+  if (event.previousContainer === event.container) {
+    moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+  }
+}
 }
