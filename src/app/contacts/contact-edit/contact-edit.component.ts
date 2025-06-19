@@ -117,6 +117,16 @@ export class ContactEditComponent implements OnInit {
     this.validationMessage = '';
   }
 
+
+  addToGroup($event: any): void {
+    const selectedContact: Contact = $event.dragData;
+    const invalidGroupContact = this.isInvalidContact(selectedContact);
+    if (invalidGroupContact) {
+      return;
+    }
+    this.groupContacts.push(selectedContact);
+  }
+
   onDrop(event: CdkDragDrop<Contact[]>): void {
     this.clearValidationMessage();
 
