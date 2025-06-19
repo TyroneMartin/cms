@@ -57,6 +57,12 @@ export class ContactEditComponent implements OnInit {
   }
 
   onSubmit(form: NgForm): void {
+    // Check if there are any invalid contacts in the group
+    if (this.hasInvalidContacts()) {
+      this.validationMessage = 'Please remove invalid contacts from the group before saving.';
+      return;
+    }
+
     const value = form.value;
     const newContact = new Contact(
       this.id,
@@ -88,14 +94,23 @@ export class ContactEditComponent implements OnInit {
 
   isInvalidContact(newContact: Contact): boolean {
     if (!newContact) return true;
-    
-    if (this.contact && newContact.id === this.contact.id) return true;
-    
-    if (this.groupContacts.some(c => c.id === newContact.id)) return true;
-    
     if (this.contactService.isContactInGroup(newContact.id, this.contact?.id)) return true;
     
     return false;
+  }
+
+  getInvalidContactReason(contact: Contact): string {
+    if (this.contact && contact.id === this.contact.id) {
+      return 'Cannot add to own group';
+    }
+    if (this.contactService.isContactInGroup(contact.id, this.contact?.id)) {
+      return 'Already in another group';
+    }
+    return 'Invalid contact';
+  }
+
+  hasInvalidContacts(): boolean {
+    return this.groupContacts.some(contact => this.isInvalidContact(contact));
   }
 
   clearValidationMessage(): void {
@@ -111,15 +126,18 @@ export class ContactEditComponent implements OnInit {
     } else {
       // Moving from contact list to group contacts
       const draggedContact = event.previousContainer.data[event.previousIndex];
-      
-      if (this.isInvalidContact(draggedContact)) {
-        this.validationMessage = 
-          'Contact cannot be added to the group. It is already in another group or is the current contact.';
-        return;
-      }
-
       const contactCopy = JSON.parse(JSON.stringify(draggedContact));
+      
       this.groupContacts.splice(event.currentIndex, 0, contactCopy);
+      
+      // Then check if it's invalid and show validation message
+      if (this.isInvalidContact(draggedContact)) {
+        if (this.contact && draggedContact.id === this.contact.id) {
+          this.validationMessage = 'A contact cannot be added to its own group.';
+        } else if (this.contactService.isContactInGroup(draggedContact.id, this.contact?.id)) {
+          this.validationMessage = 'This contact is already a member of another group and cannot be added to multiple groups.';
+        }
+      }
     }
   }
 }
