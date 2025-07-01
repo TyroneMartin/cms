@@ -28,7 +28,7 @@ export const appRoutes: Routes = [
       { path: ':id/edit', component: ContactEditComponent }
     ]
    },
-  { path: '**', redirectTo: '/documents,' }
+  { path: '**', redirectTo: '/documents' }
 
 ];
 
