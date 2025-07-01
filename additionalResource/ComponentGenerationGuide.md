@@ -2,7 +2,7 @@
 
 This guide demonstrates how to create new Angular components with appropriate prefixes.
 
-> Demo : [Week 07 Working Angular Application Demo](https://youtu.be/E1HNcze7OzE)
+> Demo : [Week 07 Working Angular Application Demo](https://youtu.be/kwAy6CJ6i6o)
 
 
 ## Creating Components with the CMS Prefix

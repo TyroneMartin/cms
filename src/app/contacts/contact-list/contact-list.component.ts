@@ -6,6 +6,8 @@ import { Subscription } from 'rxjs';
 import { Contact } from '../contact.model';
 import { ContactService } from '../contact.service';
 import { ContactItemComponent } from '../contact-item/contact-item.component';
+import { ContactsFilterPipe } from '../contacts-filter.pipe';
+
 
 @Component({
   selector: 'cms-contact-list',
@@ -15,6 +17,7 @@ import { ContactItemComponent } from '../contact-item/contact-item.component';
     RouterModule,
     DragDropModule,
     ContactItemComponent,
+    ContactsFilterPipe
   ],
   templateUrl: './contact-list.component.html',
   styleUrls: ['./contact-list.component.css']
@@ -22,6 +25,7 @@ import { ContactItemComponent } from '../contact-item/contact-item.component';
 export class ContactListComponent implements OnInit, OnDestroy {
   contacts: Contact[] = [];
   subscription!: Subscription;
+  term: string = '';
 
   constructor(private contactService: ContactService) {}
 
@@ -73,5 +77,9 @@ export class ContactListComponent implements OnInit, OnDestroy {
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     }
+  }
+
+  search(term: string): void {
+    this.term = term;
   }
 }
