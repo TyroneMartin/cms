@@ -10,18 +10,34 @@ app.use(express.static(browserDist));
 
 // Check if files exist (for debugging)
 console.log('Checking if files exist...');
-console.log('Index.html exists:', fs.existsSync(path.join(browserDist, '')));
+console.log('CSR Index exists:', fs.existsSync(path.join(browserDist, 'index.csr.html')));
+console.log('Regular Index exists:', fs.existsSync(path.join(browserDist, 'index.html')));
 console.log('Server files exist:', fs.existsSync(path.join(__dirname, 'dist/cms/server/server.mjs')));
 
-// All regular routes use the Universal engine
+// All regular routes - try both possible index files
 app.get('*', (req, res) => {
-  res.sendFile(path.join(browserDist, 'index.html'), {
-    headers: {
-      'Cache-Control': 'no-cache, no-store, must-revalidate',
-      'Pragma': 'no-cache',
-      'Expires': '0'
-    }
-  });
+  const csrPath = path.join(browserDist, 'index.csr.html');
+  const regularPath = path.join(browserDist, 'index.html');
+  
+  if (fs.existsSync(csrPath)) {
+    res.sendFile(csrPath, {
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      }
+    });
+  } else if (fs.existsSync(regularPath)) {
+    res.sendFile(regularPath, {
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      }
+    });
+  } else {
+    res.status(404).send('Index file not found');
+  }
 });
 
 // Error handling
@@ -33,5 +49,5 @@ app.use((err, req, res, next) => {
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Server listening on http://localhost:${port}`);
-  // console.log('Browser files served from:', browserDist);
+  console.log('Browser files served from:', browserDist);
 });
