@@ -61,8 +61,6 @@ mongoose.connect('mongodb://localhost:27017/cms')
   .catch(err => console.log('Database connection failed:', err));
 
 
-
-
 // Catch-all route - serves your main HTML file
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist/cms/browser/index.csr.html'));
