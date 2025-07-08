@@ -1,53 +1,48 @@
 const express = require('express');
 const path = require('path');
-const fs = require('fs');
+const http = require('http');
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+// var mongoose = require('mongoose');
 
 const app = express();
 
-// Serve static files from the browser directory
-const browserDist = path.join(__dirname, 'dist/cms/browser');
-app.use(express.static(browserDist));
+// Middleware configuration
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(logger('dev'));
 
-// Check if files exist (for debugging)
-console.log('Checking if files exist...');
-console.log('CSR Index exists:', fs.existsSync(path.join(browserDist, 'index.csr.html')));
-console.log('Regular Index exists:', fs.existsSync(path.join(browserDist, 'index.html')));
-console.log('Server files exist:', fs.existsSync(path.join(__dirname, 'dist/cms/server/server.mjs')));
+// CORS configuration
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept'
+  );
+  res.setHeader(
+    'Access-Control-Allow-Methods',
+    'GET, POST, PATCH, PUT, DELETE, OPTIONS'
+  );
+  next();
+});
 
-// All regular routes - try both possible index files
+// Static files configuration
+app.use(express.static(path.join(__dirname, 'dist/cms/browser')));
+
+// Catch-all route - serves your main HTML file
 app.get('*', (req, res) => {
-  const csrPath = path.join(browserDist, 'index.csr.html');
-  const regularPath = path.join(browserDist, 'index.html');
-  
-  if (fs.existsSync(csrPath)) {
-    res.sendFile(csrPath, {
-      headers: {
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0'
-      }
-    });
-  } else if (fs.existsSync(regularPath)) {
-    res.sendFile(regularPath, {
-      headers: {
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0'
-      }
-    });
-  } else {
-    res.status(404).send('Index file not found');
-  }
+  res.sendFile(path.join(__dirname, 'dist/cms/browser/index.csr.html'));
 });
 
-// Error handling
-app.use((err, req, res, next) => {
-  console.error(err);
-  res.status(500).send('Server Error');
-});
+// Server configuration
+const port = process.env.PORT || '3000';
+app.set('port', port);
 
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-  console.log(`Server listening on http://localhost:${port}`);
-  console.log('Browser files served from:', browserDist);
+const server = http.createServer(app);
+
+server.listen(port, function() {
+  console.log(`Server running on http://localhost:${port}`);
+  // console.log('Serving static files from:', path.join(__dirname, 'dist/cms/browser'));
 });
