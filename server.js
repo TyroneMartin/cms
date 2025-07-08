@@ -4,6 +4,8 @@ const http = require('http');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+const mongoose = require('mongoose'); // Mongoose for MongoDB
+
 
 // Get defined routing files
 var index = require('./server/routes/app');
@@ -42,6 +44,25 @@ app.use('/messages', messageRoutes);
 app.use('/contacts', contactRoutes);
 app.use('/documents', documentsRoutes);
 
+
+// establish a connection to the mongo database
+// mongoose.connect('mongodb://localhost:27017/cms',
+//    { useNewUrlParser: true }, (err, res) => {
+//       if (err) {
+//          console.log('Connection failed: ' + err);
+//       } else {
+//          console.log('Connected to database!');
+//       }
+//    });
+
+// Using Promises
+mongoose.connect('mongodb://localhost:27017/cms')
+  .then(() => console.log('Connected to MongoDB'))
+  .catch(err => console.log('Database connection failed:', err));
+
+
+
+
 // Catch-all route - serves your main HTML file
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist/cms/browser/index.csr.html'));
@@ -55,5 +76,5 @@ const server = http.createServer(app);
 
 server.listen(port, function() {
   console.log(`Server running on http://localhost:${port}`);
-  console.log('Serving static files from:', path.join(__dirname, 'dist/cms/browser'));
+  // console.log('Serving static files from:', path.join(__dirname, 'dist/cms/browser'));
 });
