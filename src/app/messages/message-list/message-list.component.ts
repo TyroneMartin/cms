@@ -35,7 +35,7 @@ export class MessageListComponent implements OnInit, OnDestroy {
     // Subscribe to changes
     this.subscription = this.messageService.messageChangedEvent.subscribe(
       (messages: Message[]) => {
-        console.log('Received updated messages:', messages);
+        // console.log('Received updated messages:', messages);
         this.messages = messages;
       }
     );
