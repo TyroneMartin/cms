@@ -15,6 +15,25 @@ const documentsRoutes = require('./server/routes/documents');
 
 const app = express();
 
+// Using Promises
+// mongoose.connect('mongodb://localhost:27017/cms')
+//   .then(() => console.log('Connected to MongoDB'))
+//   .catch(err => console.log('Database connection failed:', err));
+
+// Set up mongoose connection
+mongoose.connect('mongodb://localhost:27017/cms', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+.then(() => {
+  console.log('Connected to database!');
+})
+.catch((err) => {
+  console.log('Connection failed: ' + err);
+});
+
+
+
 // Middleware configuration
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -43,22 +62,6 @@ app.use('/', index);
 app.use('/messages', messageRoutes);
 app.use('/contacts', contactRoutes);
 app.use('/documents', documentsRoutes);
-
-
-// establish a connection to the mongo database
-// mongoose.connect('mongodb://localhost:27017/cms',
-//    { useNewUrlParser: true }, (err, res) => {
-//       if (err) {
-//          console.log('Connection failed: ' + err);
-//       } else {
-//          console.log('Connected to database!');
-//       }
-//    });
-
-// Using Promises
-mongoose.connect('mongodb://localhost:27017/cms')
-  .then(() => console.log('Connected to MongoDB'))
-  .catch(err => console.log('Database connection failed:', err));
 
 
 // Catch-all route - serves your main HTML file

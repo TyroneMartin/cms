@@ -38,6 +38,10 @@ export class DocumentsComponent implements OnInit, AfterViewInit {
     }
   }
 
+  getDocument(id: string): Document | null {
+  return this.documentService.documents.find(document => document.id === id) || null;
+}
+
   onDocumentSelected(document: Document) {
     this.selectedDocument = document;
   }

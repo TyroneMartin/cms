@@ -46,6 +46,10 @@ export class DocumentService {
       );
   }
 
+   getDocument(id: string): Document | null {
+    return this.documents.find(document => document.id === id) || null;
+  }
+
   addDocument(document: Document) {
     if (!document) return;
 

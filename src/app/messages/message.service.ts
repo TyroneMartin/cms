@@ -1,12 +1,13 @@
 import { Injectable, EventEmitter } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Message } from './message.model';
+import { Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MessageService {
-  messageChangedEvent = new EventEmitter<Message[]>();
+  messageListChangedEvent = new Subject<Message[]>();
   messages: Message[] = [];
   maxMessageId!: number;
 
@@ -14,23 +15,11 @@ export class MessageService {
     this.getMessages();
   }
 
-  getMaxId(): number {
-    let maxId = 0;
-    for (const message of this.messages) {
-      const currentId = parseInt(message.id);
-      if (currentId > maxId) {
-        maxId = currentId;
-      }
-    }
-    return maxId;
-  }
-
   getMessages(): void {
-    this.http.get<Message[]>('http://localhost:3000/messages')
+    this.http.get<{message: string, messages: Message[]}>('http://localhost:3000/messages')
       .subscribe(
-        (messages: Message[]) => {
-          this.messages = messages || [];
-          this.maxMessageId = this.getMaxId();
+        (responseData) => {
+          this.messages = responseData.messages || [];
           this.sortAndSend();
         },
         (error: any) => {
@@ -46,21 +35,87 @@ export class MessageService {
   addMessage(newMessage: Message): void {
     if (!newMessage) return;
 
+    // Make sure id of the new Message is empty
     newMessage.id = '';
     const headers = new HttpHeaders({'Content-Type': 'application/json'});
 
-    this.http.post<{ statusMessage: string, message: Message }>(
+    // Add to database
+    this.http.post<{ message: string, createdMessage: Message }>(
       'http://localhost:3000/messages',
       newMessage,
       { headers }
-    ).subscribe(response => {
-      this.messages.push(response.message);
-      this.sortAndSend();
-    });
+    ).subscribe(
+      (responseData) => {
+        this.messages.push(responseData.createdMessage);
+        this.sortAndSend();
+      },
+      (error: any) => {
+        console.error('Error adding message:', error);
+      }
+    );
+  }
+
+  updateMessage(originalMessage: Message, newMessage: Message): void {
+    if (!originalMessage || !newMessage) {
+      return;
+    }
+
+    const pos = this.messages.findIndex(m => m.id === originalMessage.id);
+
+    if (pos < 0) {
+      return;
+    }
+
+    // Set the id of the new Message to the id of the old Message
+    newMessage.id = originalMessage.id;
+    if (originalMessage.id) {
+      newMessage.id = originalMessage.id;
+    }
+
+    const headers = new HttpHeaders({'Content-Type': 'application/json'});
+
+    // Update database
+    this.http.put<{ message: string, updatedMessage: Message }>(
+      'http://localhost:3000/messages/' + originalMessage.id,
+      newMessage, 
+      { headers }
+    ).subscribe(
+      (response: any) => {
+        this.messages[pos] = newMessage;
+        this.sortAndSend();
+      },
+      (error: any) => {
+        console.error('Error updating message:', error);
+      }
+    );
+  }
+
+  deleteMessage(message: Message): void {
+    if (!message) {
+      return;
+    }
+
+    const pos = this.messages.findIndex(m => m.id === message.id);
+
+    if (pos < 0) {
+      return;
+    }
+
+    // Delete from database
+    this.http.delete('http://localhost:3000/messages/' + message.id)
+      .subscribe(
+        (response: any) => {
+          this.messages.splice(pos, 1);
+          this.sortAndSend();
+        },
+        (error: any) => {
+          console.error('Error deleting message:', error);
+        }
+      );
   }
 
   private sortAndSend(): void {
     this.messages.sort((a, b) => a.subject > b.subject ? 1 : -1);
-    this.messageChangedEvent.emit(this.messages.slice());
+    this.messageListChangedEvent.next(this.messages.slice());
   }
 }
