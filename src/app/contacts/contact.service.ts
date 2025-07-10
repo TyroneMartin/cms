@@ -28,23 +28,24 @@ export class ContactService {
     return maxId;
   }
 
-  getContacts(): void {
-    this.http.get<Contact[]>('http://localhost:3000/contacts')
-      .subscribe(
-        (contacts: Contact[]) => {
-          this.contacts = contacts || [];
-          this.maxContactId = this.getMaxId();
-          this.sortAndSend();
-        },
-        (error: any) => {
-          console.error('Error fetching contacts:', error);
-        }
-      );
-  }
+getContacts(): void {
+  this.http.get<Contact[]>('http://localhost:3000/api/contacts')
+    .subscribe(
+      (contacts: Contact[]) => {
+        this.contacts = contacts || [];
+        this.maxContactId = this.getMaxId();
+        this.sortAndSend();
+      },
+      (error: any) => {
+        console.error('Error fetching contacts:', error);
+      }
+    );
+}
 
-  getContact(id: string): Contact | null {
-    return this.contacts.find(contact => contact.id === id) || null;
-  }
+getContact(id: string): Contact | null {
+  return this.contacts.find(contact => contact.id === id) || null;
+}
+
 
   addContact(newContact: Contact): void {
     if (!newContact) return;
@@ -53,7 +54,7 @@ export class ContactService {
     const headers = new HttpHeaders({'Content-Type': 'application/json'});
 
     this.http.post<{ message: string, contact: Contact }>(
-      'http://localhost:3000/contacts',
+      'http://localhost:3000/api/contacts',
       newContact,
       { headers }
     ).subscribe(response => {
@@ -72,7 +73,7 @@ export class ContactService {
     const headers = new HttpHeaders({'Content-Type': 'application/json'});
 
     this.http.put(
-      `http://localhost:3000/contacts/${original.id}`,
+      `http://localhost:3000/api/contacts/${original.id}`,
       newContact,
       { headers }
     ).subscribe(() => {
@@ -87,7 +88,7 @@ export class ContactService {
     const pos = this.contacts.findIndex(c => c.id === contact.id);
     if (pos < 0) return;
 
-    this.http.delete(`http://localhost:3000/contacts/${contact.id}`)
+    this.http.delete(`http://localhost:3000/api/contacts/${contact.id}`)
       .subscribe(() => {
         this.contacts.splice(pos, 1);
         this.sortAndSend();

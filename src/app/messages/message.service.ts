@@ -15,18 +15,19 @@ export class MessageService {
     this.getMessages();
   }
 
-  getMessages(): void {
-    this.http.get<{message: string, messages: Message[]}>('http://localhost:3000/messages')
-      .subscribe(
-        (responseData) => {
-          this.messages = responseData.messages || [];
-          this.sortAndSend();
-        },
-        (error: any) => {
-          console.error('Error fetching messages:', error);
-        }
-      );
-  }
+getMessages(): void {
+  this.http.get<{message: string, messages: Message[]}>('http://localhost:3000/api/messages')
+    .subscribe(
+      (responseData) => {
+        this.messages = responseData.messages || [];
+        this.sortAndSend();
+      },
+      (error: any) => {
+        console.error('Error fetching messages:', error);
+      }
+    );
+}
+
 
   getMessage(id: string): Message | null {
     return this.messages.find(message => message.id === id) || null;
@@ -35,13 +36,12 @@ export class MessageService {
   addMessage(newMessage: Message): void {
     if (!newMessage) return;
 
-    // Make sure id of the new Message is empty
     newMessage.id = '';
     const headers = new HttpHeaders({'Content-Type': 'application/json'});
 
     // Add to database
     this.http.post<{ message: string, createdMessage: Message }>(
-      'http://localhost:3000/messages',
+      'http://localhost:3000/api/messages',
       newMessage,
       { headers }
     ).subscribe(
@@ -76,7 +76,7 @@ export class MessageService {
 
     // Update database
     this.http.put<{ message: string, updatedMessage: Message }>(
-      'http://localhost:3000/messages/' + originalMessage.id,
+      'http://localhost:3000/api/messages/' + originalMessage.id,
       newMessage, 
       { headers }
     ).subscribe(
@@ -102,7 +102,7 @@ export class MessageService {
     }
 
     // Delete from database
-    this.http.delete('http://localhost:3000/messages/' + message.id)
+    this.http.delete('http://localhost:3000/api/messages/' + message.id)
       .subscribe(
         (response: any) => {
           this.messages.splice(pos, 1);

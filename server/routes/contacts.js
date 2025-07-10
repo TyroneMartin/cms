@@ -8,9 +8,23 @@ router.get('/', (req, res, next) => {
   Contact.find()
     .populate('group')
     .then(contacts => {
+      res.status(200).json(contacts);
+    })
+    .catch(error => {
+      res.status(500).json({
+        message: 'An error occurred',
+        error: error
+      });
+    });
+});
+
+// GET single contact
+router.get('/:id', (req, res, next) => {
+  Contact.findOne({ id: req.params.id })
+    .then(contact => {
       res.status(200).json({
-        message: 'Contacts fetched successfully!',
-        contacts: contacts
+        message: 'Contact fetched successfully',
+        contact: contact
       });
     })
     .catch(error => {
