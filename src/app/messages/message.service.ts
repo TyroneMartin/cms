@@ -1,93 +1,121 @@
 import { Injectable, EventEmitter } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-// import { MOCKMESSAGES } from './MOCKMESSAGES';
 import { Message } from './message.model';
+import { Subject } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class MessageService {
+  messageListChangedEvent = new Subject<Message[]>();
   messages: Message[] = [];
-  maxMessageId: number;
+  maxMessageId!: number;
 
-  messageChangedEvent = new EventEmitter<Message[]>();
-  
   constructor(private http: HttpClient) {
-    // this.messages = MOCKMESSAGES;
-    this.maxMessageId = this.getMaxId();
+    this.getMessages();
   }
 
-  getMaxId(): number {
-    let maxId = 0;
-    
-    for (let message of this.messages) {
-      const currentId = parseInt(message.id);
-      if (currentId > maxId) {
-        maxId = currentId;
+getMessages(): void {
+  this.http.get<{message: string, messages: Message[]}>('http://localhost:3000/api/messages')
+    .subscribe(
+      (responseData) => {
+        this.messages = responseData.messages || [];
+        this.sortAndSend();
+      },
+      (error: any) => {
+        console.error('Error fetching messages:', error);
       }
-    }
-    
-    return maxId;
-  }
+    );
+}
 
-  getMessages() {
-    this.http.get<Message[]>('https://wdd430-cms-application-default-rtdb.firebaseio.com/messages.json')
-      .subscribe(
-        (messages: Message[]) => {
-          this.messages = messages ? messages : [];
-          this.maxMessageId = this.getMaxId();
-          this.messages.sort((a, b) => {
-            if (a.subject < b.subject) return -1;
-            if (a.subject > b.subject) return 1;
-            return 0;
-          });
-          this.messageChangedEvent.emit(this.messages.slice());
-        },
-        (error: any) => {
-          console.error('Error fetching messages:', error);
-        }
-      );
-    
-    return this.messages.slice();
-  }
 
   getMessage(id: string): Message | null {
-    for (let message of this.messages) {
-      if (message.id === id) {
-        return message;
+    return this.messages.find(message => message.id === id) || null;
+  }
+
+  addMessage(newMessage: Message): void {
+    if (!newMessage) return;
+
+    newMessage.id = '';
+    const headers = new HttpHeaders({'Content-Type': 'application/json'});
+
+    // Add to database
+    this.http.post<{ message: string, createdMessage: Message }>(
+      'http://localhost:3000/api/messages',
+      newMessage,
+      { headers }
+    ).subscribe(
+      (responseData) => {
+        this.messages.push(responseData.createdMessage);
+        this.sortAndSend();
+      },
+      (error: any) => {
+        console.error('Error adding message:', error);
       }
+    );
+  }
+
+  updateMessage(originalMessage: Message, newMessage: Message): void {
+    if (!originalMessage || !newMessage) {
+      return;
     }
-    return null;
+
+    const pos = this.messages.findIndex(m => m.id === originalMessage.id);
+
+    if (pos < 0) {
+      return;
+    }
+
+    // Set the id of the new Message to the id of the old Message
+    newMessage.id = originalMessage.id;
+    if (originalMessage.id) {
+      newMessage.id = originalMessage.id;
+    }
+
+    const headers = new HttpHeaders({'Content-Type': 'application/json'});
+
+    // Update database
+    this.http.put<{ message: string, updatedMessage: Message }>(
+      'http://localhost:3000/api/messages/' + originalMessage.id,
+      newMessage, 
+      { headers }
+    ).subscribe(
+      (response: any) => {
+        this.messages[pos] = newMessage;
+        this.sortAndSend();
+      },
+      (error: any) => {
+        console.error('Error updating message:', error);
+      }
+    );
   }
 
-  storeMessages() {
-    const messagesString = JSON.stringify(this.messages);
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json'
-    });
-
-    this.http.put('https://wdd430-cms-application-default-rtdb.firebaseio.com/messages.json', 
-      messagesString, 
-      { headers: headers })
-      .subscribe(
-        () => {
-          this.messageChangedEvent.emit(this.messages.slice());
-        },
-        (error: any) => {
-          console.error('Error storing messages:', error);
-        }
-      );
-  }
-
-  addMessage(message: Message) {
+  deleteMessage(message: Message): void {
     if (!message) {
       return;
     }
 
-    this.maxMessageId++;
-    message.id = this.maxMessageId.toString();
-    this.messages.push(message);
-    this.storeMessages();
-    console.log('Messages after add:', this.messages);
+    const pos = this.messages.findIndex(m => m.id === message.id);
+
+    if (pos < 0) {
+      return;
+    }
+
+    // Delete from database
+    this.http.delete('http://localhost:3000/api/messages/' + message.id)
+      .subscribe(
+        (response: any) => {
+          this.messages.splice(pos, 1);
+          this.sortAndSend();
+        },
+        (error: any) => {
+          console.error('Error deleting message:', error);
+        }
+      );
+  }
+
+  private sortAndSend(): void {
+    this.messages.sort((a, b) => a.subject > b.subject ? 1 : -1);
+    this.messageListChangedEvent.next(this.messages.slice());
   }
 }
